@@ -77,10 +77,8 @@ module.exports = async (email, subject, text) => {
       text: text, // plain text body
     });
     console.log("email sent successfully");
-    console.log(info);
   } catch (error) {
     console.log("email not sent!");
-    console.log(process.env.USER);
 
     console.log(error);
     return error;

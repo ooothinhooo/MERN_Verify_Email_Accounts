@@ -6,6 +6,12 @@ const sendEmail = require("../utils/sendEmail");
 const bcrypt = require("bcrypt");
 const Joi = require("joi");
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 router.post("/", async (req, res) => {
   try {
     const { error } = validate(req.body);
@@ -25,13 +31,15 @@ router.post("/", async (req, res) => {
 
     if (!user.verified) {
       let token = await Token.findOne({ userId: user._id });
+      let randomInt = getRandomInt(100000, 999999);
       if (!token) {
         token = await new Token({
           userId: user._id,
+          code: randomInt,
           token: crypto.randomBytes(32).toString("hex"),
         }).save();
-        const url = `${process.env.BASE_URL}users/${user.id}/verify/${token.token}`;
-        await sendEmail(user.email, "Verify Email", url);
+        // const url = `${process.env.BASE_URL}users/${user.id}/verify/${token.token}`;
+        await sendEmail(user.email, "MÃ XÁC THỰC CỦA BẠN LÀ: ", randomInt);
       }
 
       return res
