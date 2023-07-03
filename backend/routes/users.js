@@ -29,17 +29,19 @@ router.post("/", async (req, res) => {
 
     user = await new User({ ...req.body, password: hashPassword }).save();
     let randomInt = getRandomInt(100000, 999999);
-    const token = await new Token({
+    const token = await Token.create({
       userId: user._id,
       code: randomInt,
       token: crypto.randomBytes(32).toString("hex"),
-    }).save();
+    });
+
     const url = `${process.env.BASE_URL}users/${user.id}/verify/${token.token}`;
     // await sendEmail(user.email, "Verify Email", url);
     await sendEmail(
       user.email,
       "MÃ XÁC THỰC CỦA BẠN LÀ",
-      `Mã Xác Thực của bạn có thời hạn là 60s <> ${randomInt} <>`
+      `Mã Xác Thực của bạn có thời hạn là 60s <> ${randomInt} <>`,
+      randomInt
     );
 
     res
@@ -52,9 +54,9 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/verify", async (req, res) => {
-  console.log(req.query.id);
-  console.log(req.query.token);
   try {
+    console.log(req.query.id);
+    console.log(req.query.token);
     const user = await User.findOne({ _id: req.query.id });
     console.log(user);
 
